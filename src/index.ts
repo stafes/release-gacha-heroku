@@ -63,7 +63,7 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
     const action = args.shift();
     switch (action) {
       case 'add':
-        const addName = args.shift();
+        const addName = args.join(' ');
         if (addName) {
           const id = await db.insertUser(addName);
           console.log(`insert id: ${id}`);
