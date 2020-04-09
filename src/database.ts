@@ -18,6 +18,18 @@ export class Database {
     return id as number;
   }
 
+  public async listUser(): Promise<{
+    id: number;
+    name: string;
+  }[]> {
+    const conn = this.getQueryBuilder("dice_users");
+
+    return conn
+      .select(['id', 'name'])
+      .from('dice_users')
+    ;
+  }
+
   protected getConnection<TRecord, TResult = unknown[]>() {
     if (knexConnection !== undefined) {
       return knexConnection;

@@ -5,6 +5,8 @@ import {
 } from "@slack/web-api";
 import { Database } from './database';
 
+const DEPLOY_DAYS = ["火", "水A", "水B", "木", "金", "月"];
+
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET
@@ -42,6 +44,18 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
     await app.client.chat.postEphemeral(payload);
   }
 
+  function doDice(users: Array<{
+    id: number,
+    name: string
+  }>) {
+    let array = users.concat();
+    for (let i = array.length - 1; i >= 0; i--) {
+      let rand = Math.floor(Math.random() * (i + 1));
+      [array[i], array[rand]] = [array[rand], array[i]];
+    }
+    return array;
+  }
+
 
   try {
     const args: Array<string> = command.text.split(' ');
@@ -53,13 +67,25 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
         if (addName) {
           const id = db.insertUser(addName);
           console.log(`insert id: ${id}`);
-          await postMessage("ユーザーを追加しました");
+          await postMessage(`リリース当番ガチャ: ユーザーを追加しました。\n「${addName}さん、ようこそ！」`);
         }
         break;
+      case 'list':
+        const userList = await db.listUser();
+        await postEphemeral(
+          `
+リリース当番ガチャのユーザリスト。\n` +
+            userList.map((u) => `${u.name}`).join("\n")
+        );
+        break;
       default:
-        await postMessage(`
-リリース当番ガチャ
-        `);
+        const users = doDice(await db.listUser());
+        let msg = "リリース当番ガチャ\n";
+        for (let i = 0; i < DEPLOY_DAYS.length; i++) {
+          let targetName = users[i].name;
+          msg += `${DEPLOY_DAYS[i]} : *${targetName}* \n`;
+        }
+        await postMessage(msg);
     }
   } catch (e) {
     console.log(e);
