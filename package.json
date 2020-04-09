@@ -18,12 +18,11 @@
     "Bolt",
     "Heroku"
   ],
-  "author": "Kazuhiro Sera @seratch",
+  "author": "sori",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/seratch/bolt-on-heroku/issues"
   },
-  "homepage": "https://github.com/seratch/bolt-on-heroku#readme",
   "dependencies": {
     "@slack/bolt": "^1.4.1",
     "@types/node": "^12.7.9",

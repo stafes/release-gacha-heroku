@@ -17,5 +17,5 @@ module.exports = {
     directory: "./db/migrations",
     tableName: "knex_migrations",
   },
-  debug: Boolean(env.DB_DEBUG),
+  debug: Boolean(process.env.DB_DEBUG),
 };
