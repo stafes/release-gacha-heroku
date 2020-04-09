@@ -16,7 +16,7 @@ if (process.env.DEBUG) {
   });
 }
 
-app.command('/release-gacha', async ({ command, ack, say, context}) => {
+app.command('/release-gacha', async ({ command, ack, context }) => {
   ack();
   const db = new Database();
 
