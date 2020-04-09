@@ -65,7 +65,7 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
       case 'add':
         const addName = args.shift();
         if (addName) {
-          const id = db.insertUser(addName);
+          const id = await db.insertUser(addName);
           console.log(`insert id: ${id}`);
           await postMessage(`リリース当番ガチャ: ユーザーを追加しました。\n「${addName}さん、ようこそ！」`);
         }
@@ -80,11 +80,12 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
         break;
       default:
         const users = doDice(await db.listUser());
-        let msg = "リリース当番ガチャ\n";
+        let msg = ":star-struck: *今週のリリース当番ガチャ！* :star-struck:\n```";
         for (let i = 0; i < DEPLOY_DAYS.length; i++) {
           let targetName = users[i].name;
           msg += `${DEPLOY_DAYS[i]} : *${targetName}* \n`;
         }
+        msg += '```';
         await postMessage(msg);
     }
   } catch (e) {
