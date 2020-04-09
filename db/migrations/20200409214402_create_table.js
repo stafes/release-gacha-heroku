@@ -1,5 +1,5 @@
 
-exports.up = function(knex) {
+exports.up = async function(knex) {
   return await knex.schema.createTable('dice_users', (t) => {
     t.increments('id').primary();
     t.string('name');
@@ -7,6 +7,6 @@ exports.up = function(knex) {
   });
 };
 
-exports.down = function(knex) {
+exports.down = async function(knex) {
   return await knex.schema.dropTable('dice_users');
 };
