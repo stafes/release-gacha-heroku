@@ -80,13 +80,26 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
         break;
       default:
         const users = doDice(await db.listUser());
-        let msg = ":star-struck: *今週のリリース当番ガチャ！* :star-struck:\n```";
+        let msg = '';
         for (let i = 0; i < DEPLOY_DAYS.length; i++) {
           let targetName = users[i].name;
           msg += `${DEPLOY_DAYS[i]} : *${targetName}* \n`;
         }
-        msg += '```';
-        await postMessage(msg);
+        
+        const payload: ChatPostMessageArguments = {
+          token: context.botToken,
+          channel: command.channel_id,
+          text: ":star-struck: *今週のリリース当番ガチャ！* :star-struck:",
+          attachments: [
+            {
+              fallback: "今週のリリース当番ガチャ",
+              color: "#f08000",
+              text: msg,
+            },
+          ],
+        };
+
+        await app.client.chat.postMessage(payload);
     }
   } catch (e) {
     console.log(e);
