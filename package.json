@@ -1,7 +1,7 @@
 {
-  "name": "bolt-on-heroku",
-  "version": "1.0.0",
-  "description": "Bolt app which runs on Heroku",
+  "name": "release-gacha-heroku",
+  "version": "0.0.1",
+  "description": "Release gacha heroku",
   "main": "index.js",
   "scripts": {
     "start": "npm run build && node lib/index.js",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/seratch/bolt-on-heroku.git"
+    "url": "https://github.com/yukiyukki/release-gacha-heroku.git"
   },
   "keywords": [
     "Slack",
@@ -21,7 +21,7 @@
   "author": "sori",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/seratch/bolt-on-heroku/issues"
+    "url": "https://github.com/yukiyukki/release-gacha-heroku/issues"
   },
   "dependencies": {
     "@slack/bolt": "^1.4.1",
