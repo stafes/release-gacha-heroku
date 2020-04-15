@@ -7,9 +7,12 @@ export class Database {
   public async insertUser(name: string): Promise<number> {
     const conn = this.getQueryBuilder("dice_users");
 
+    const now = new Date();
     const id = await conn
       .insert({
         name,
+        created_at: now,
+        updated_at: now,
       })
       .into('dice_users');
 
@@ -33,10 +36,13 @@ export class Database {
   public async insertJiraUser(jiraUserId: string, slackUserId: string): Promise<number> {
     const conn = this.getQueryBuilder("dice_users");
 
+    const now = new Date();
     const id = await conn
       .insert({
         slack_user_id: slackUserId,
         jira_user_id: jiraUserId,
+        created_at: now,
+        updated_at: now,
       })
       .into('jira_users');
 
