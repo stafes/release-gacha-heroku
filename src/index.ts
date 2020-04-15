@@ -165,7 +165,8 @@ function extractHandleName(body: string): Array<string> {
 receiver.app.post('/jira-post', (req, res) => {
   const body = req.body;
   if (body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
-    return;
+    res.statusCode = 404;
+    return res.json({});
   }
 
   const issue = `${body.issue.key} ${body.issue.fields.summary}`;
@@ -173,7 +174,8 @@ receiver.app.post('/jira-post', (req, res) => {
   const userList = extractHandleName(body.comment.body);
 
   if (!userList.length) {
-    return;
+    res.statusCode = 404;
+    return res.json({});
   }
 
   const db = new Database();
@@ -189,6 +191,9 @@ receiver.app.post('/jira-post', (req, res) => {
 
     await app.client.chat.postMessage(payload);
   });
+
+  res.statusCode = 200;
+  return res.json({result: 'success'});
 });
 
 
