@@ -30,28 +30,28 @@ export class Database {
     ;
   }
 
-  public async insertStashUser(stashUserId: string, slackUserId: string): Promise<number> {
+  public async insertJiraUser(jiraUserId: string, slackUserId: string): Promise<number> {
     const conn = this.getQueryBuilder("dice_users");
 
     const id = await conn
       .insert({
         slack_user_id: slackUserId,
-        stash_user_id: stashUserId,
+        jira_user_id: jiraUserId,
       })
-      .into('stash_users');
+      .into('jira_users');
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     return id as number;
   }
 
-  public async getSlackUserId(stashUserId: string): Promise<string> {
-    const conn = this.getQueryBuilder("stash_users");
+  public async getSlackUserId(jiraUserId: string): Promise<string> {
+    const conn = this.getQueryBuilder("jira_users");
 
     const result = await conn
       .select(['id', 'slack_user_id'])
-      .from('stash_users')
-      .where('stash_user_id', stashUserId)
+      .from('jira_users')
+      .where('jira_user_id', jiraUserId)
       .first()
     ;
 

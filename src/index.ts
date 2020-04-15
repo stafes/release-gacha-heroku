@@ -48,15 +48,15 @@ app.command('/jira-comment-dm', async ({ command, ack, context }) => {
     const action = args.shift();
     switch (action) {
       case 'add':
-        const stashUserId = args.join(' ');
-        if (stashUserId) {
-          const id = await db.insertStashUser(command.user_id, stashUserId);
+        const jiraUserId = args.join(' ');
+        if (jiraUserId) {
+          const id = await db.insertJiraUser(command.user_id, jiraUserId);
           console.log(`insert id: ${id} to ${command.user_id}/${command.user_name}`);
-          await postEphemeral(`Stashのユーザーを設定しました。: ${stashUserId}`);
+          await postEphemeral(`JIRAのユーザーを設定しました。: ${jiraUserId}`);
         }
         break;
       default:
-        await postEphemeral('```/jira-comment-dm add [stashのユーザ名]```で追加できます。');
+        await postEphemeral('```/jira-comment-dm add [jiraのユーザ名]```で追加できます。');
     }
   } catch (e) {
     console.log(e);
