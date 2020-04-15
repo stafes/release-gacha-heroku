@@ -1,4 +1,4 @@
-import { App } from '@slack/bolt';
+import { App, ExpressReceiver } from '@slack/bolt';
 import {
   ChatPostMessageArguments,
   ChatPostEphemeralArguments,
@@ -7,9 +7,16 @@ import { Database } from './database';
 
 const DEPLOY_DAYS = ["火", "水A", "水B", "木", "金", "月"];
 
+if (process.env.SLACK_SIGNING_SECRET === undefined) {
+  process.env.SLACK_SIGNING_SECRET = '';
+};
+const receiver = new ExpressReceiver({
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+});
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  receiver,
 });
 if (process.env.DEBUG) {
   app.use((args: any) => {
@@ -17,6 +24,44 @@ if (process.env.DEBUG) {
     args.next();
   });
 }
+
+
+app.command('/jira-comment-dm', async ({ command, ack, context }) => {
+  ack();
+  const db = new Database();
+
+  async function postEphemeral(message: string) {
+    const payload: ChatPostEphemeralArguments = {
+      token: context.botToken,
+      attachments: [],
+      channel: command.channel_id,
+      text: message,
+      user: command.user_id,
+    };
+
+    await app.client.chat.postEphemeral(payload);
+  }
+
+  try {
+    const args: Array<string> = command.text.split(' ');
+
+    const action = args.shift();
+    switch (action) {
+      case 'add':
+        const stashUserId = args.join(' ');
+        if (stashUserId) {
+          const id = await db.insertStashUser(command.user_id, stashUserId);
+          console.log(`insert id: ${id} to ${command.user_id}/${command.user_name}`);
+          await postEphemeral(`Stashのユーザーを設定しました。: ${stashUserId}`);
+        }
+        break;
+      default:
+        await postEphemeral('```/jira-comment-dm add [stashのユーザ名]```で追加できます。');
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
 
 app.command('/release-gacha', async ({ command, ack, context }) => {
   ack();
@@ -105,6 +150,48 @@ app.command('/release-gacha', async ({ command, ack, context }) => {
     console.log(e);
   }
 });
+
+function extractHandleName(body: string): Array<string> {
+  const names = body.match(/\[~.+?]/g);
+  if (!names) {
+    return [];
+  }
+
+  return names.map(name => {
+    return name.replace(/[\[~\]]/g, '');
+  });
+}
+
+receiver.app.post('/jira-post', async (req, res) => {
+  const body = req.body;
+  if (body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
+    return;
+  }
+
+  const issue = `${body.issue.key} ${body.issue.fields.summary}`;
+  const url = `${process.env.JIRA_URL}/browse/${body.issue.key}`;
+  const userList = extractHandleName(body.comment.body);
+
+  if (!userList.length) {
+    return;
+  }
+
+  const db = new Database();
+
+  const message = `*${issue}* _(${url})_\n@${body.comment.author.name}`
+  userList.map(async (user) => {
+    const slackUserId = await db.getSlackUserId(user);
+    const payload: ChatPostMessageArguments = {
+      token: process.env.SLACK_BOT_TOKEN,
+      channel: slackUserId,
+      text: message,
+    };
+
+    await app.client.chat.postMessage(payload);
+  });
+});
+
+
 (async () => {
   // Start your app
   await app.start(process.env.PORT || 3000);

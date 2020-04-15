@@ -30,6 +30,38 @@ export class Database {
     ;
   }
 
+  public async insertStashUser(stashUserId: string, slackUserId: string): Promise<number> {
+    const conn = this.getQueryBuilder("dice_users");
+
+    const id = await conn
+      .insert({
+        slack_user_id: slackUserId,
+        stash_user_id: stashUserId,
+      })
+      .into('stash_users');
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    return id as number;
+  }
+
+  public async getSlackUserId(stashUserId: string): Promise<string> {
+    const conn = this.getQueryBuilder("stash_users");
+
+    const result = await conn
+      .select(['id', 'slack_user_id'])
+      .from('stash_users')
+      .where('stash_user_id', stashUserId)
+      .first()
+    ;
+
+    if (!result) {
+      return '';
+    }
+
+    return result.slack_user_id as string;
+  }
+
   protected getConnection<TRecord, TResult = unknown[]>() {
     if (knexConnection !== undefined) {
       return knexConnection;
