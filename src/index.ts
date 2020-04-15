@@ -162,9 +162,14 @@ function extractHandleName(body: string): Array<string> {
   });
 }
 
+receiver.app.get('/keep-alive', (req, res) => {
+  res.statusCode = 200;
+  return res.json({});
+});
+
 receiver.app.post('/jira-post', (req, res) => {
   const body = req.body;
-  if (body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
+  if (!body || body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
     res.statusCode = 404;
     return res.json({});
   }
