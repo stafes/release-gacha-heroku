@@ -162,7 +162,7 @@ function extractHandleName(body: string): Array<string> {
   });
 }
 
-receiver.app.post('/jira-post', async (req, res) => {
+receiver.app.post('/jira-post', (req, res) => {
   const body = req.body;
   if (body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
     return;
