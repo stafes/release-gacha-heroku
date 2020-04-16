@@ -196,6 +196,7 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
   const token = process.env.SLACK_BOT_TOKEN;
   userList.map(async (user) => {
     const slackUserId = await db.getSlackUserId(user);
+    console.log(`slackUserId: ${slackUserId}`);
     const payload: ChatPostMessageArguments = {
       token,
       channel: slackUserId,
@@ -210,6 +211,7 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
     } catch (e) {
       console.error('im.open error');
       console.error(e);
+      return;
     }
 
     try {
