@@ -38,6 +38,17 @@ app.command('/jira-comment-dm', async ({ command, ack, context }) => {
   const db = new Database();
 
   async function postEphemeral(message: string) {
+    if (command.channel_id === command.user_id) {
+      try {
+        await app.client.im.open({
+          token: context.botToken,
+          user: command.user_id,
+        });
+      } catch (e) {
+        console.error("add user im.open error");
+        console.error(e);
+      }
+    }
     const payload: ChatPostEphemeralArguments = {
       token: context.botToken,
       attachments: [],
