@@ -167,8 +167,8 @@ receiver.app.get('/keep-alive', (req, res) => {
   return res.json({});
 });
 
-receiver.app.post('/jira-post', (req, res) => {
-  console.log(req.body);
+receiver.app.post('/jira-post', async (req, res) => {
+  console.log(await req.body);
   const body = JSON.parse(req.body);
   console.log(body);
   if (!body || body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
