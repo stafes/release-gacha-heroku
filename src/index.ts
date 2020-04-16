@@ -207,8 +207,15 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
         token,
         user: slackUserId,
       });
+    } catch (e) {
+      console.error('im.open error');
+      console.error(e);
+    }
+
+    try {
       await app.client.chat.postMessage(payload);
     } catch (e) {
+      console.log('postmessage error');
       console.error(e);
     }
   });
