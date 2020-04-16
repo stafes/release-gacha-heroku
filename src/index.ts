@@ -1,4 +1,8 @@
 import { App, ExpressReceiver } from '@slack/bolt';
+import express, {
+  Request,
+  Response,
+} from "express";
 import {
   ChatPostMessageArguments,
   ChatPostEphemeralArguments,
@@ -13,7 +17,7 @@ if (process.env.SLACK_SIGNING_SECRET === undefined) {
 const receiver = new ExpressReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
-const app = new App({
+const app  = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   receiver,
@@ -24,6 +28,9 @@ if (process.env.DEBUG) {
     args.next();
   });
 }
+
+receiver.app.use(express.urlencoded({ extended: true }));
+receiver.app.use(express.json());
 
 
 app.command('/jira-comment-dm', async ({ command, ack, context }) => {
@@ -162,18 +169,18 @@ function extractHandleName(body: string): Array<string> {
   });
 }
 
-receiver.app.get('/keep-alive', (req, res) => {
+receiver.app.get('/keep-alive', async (req: Request, res: Response) => {
   res.statusCode = 200;
-  return res.json({});
+  return await res.json({});
 });
 
-receiver.app.post('/jira-post', async (req, res) => {
+receiver.app.post('/jira-post', async (req: Request, res: Response) => {
   console.log(await req.body);
   const body = JSON.parse(req.body);
   console.log(body);
   if (!body || body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
     res.statusCode = 404;
-    return res.json({});
+    return await res.json({});
   }
 
   const issue = `${body.issue.key} ${body.issue.fields.summary}`;
@@ -182,7 +189,7 @@ receiver.app.post('/jira-post', async (req, res) => {
 
   if (!userList.length) {
     res.statusCode = 404;
-    return res.json({});
+    return await res.json({});
   }
 
   const db = new Database();
@@ -200,8 +207,7 @@ receiver.app.post('/jira-post', async (req, res) => {
   });
 
   res.statusCode = 200;
-  res.json({result: 'success'});
-  res.end();
+  return await res.json({result: 'success'});
 });
 
 
