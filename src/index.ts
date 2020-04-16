@@ -192,16 +192,25 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
 
   const db = new Database();
 
-  const message = `*${issue}* _(${url})_\n@${body.comment.author.name}`
+  const message = `*${issue}* _(${url})_\n@${body.comment.author.name}`;
+  const token = process.env.SLACK_BOT_TOKEN;
   userList.map(async (user) => {
     const slackUserId = await db.getSlackUserId(user);
     const payload: ChatPostMessageArguments = {
-      token: process.env.SLACK_BOT_TOKEN,
+      token,
       channel: slackUserId,
       text: message,
     };
 
-    await app.client.chat.postMessage(payload);
+    try {
+      await app.client.im.open({
+        token,
+        user: slackUserId,
+      });
+      await app.client.chat.postMessage(payload);
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   res.statusCode = 200;
