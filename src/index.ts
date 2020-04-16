@@ -169,16 +169,16 @@ function extractHandleName(body: string): Array<string> {
   });
 }
 
-receiver.app.get('/keep-alive', async (req: Request, res: Response) => {
+receiver.app.get('/keep-alive', (req: Request, res: Response) => {
   res.statusCode = 200;
-  return await res.json({});
+  return res.json({});
 });
 
-receiver.app.post('/jira-post', async (req: Request, res: Response) => {
+receiver.app.post('/jira-post', (req: Request, res: Response) => {
   const body = req.body;
   if (!body || body.webhookEvent !== 'jira:issue_updated' || !body.comment) {
     res.statusCode = 404;
-    return await res.json({});
+    return res.json({});
   }
 
   const issue = `${body.issue.key} ${body.issue.fields.summary}`;
@@ -187,7 +187,7 @@ receiver.app.post('/jira-post', async (req: Request, res: Response) => {
 
   if (!userList.length) {
     res.statusCode = 404;
-    return await res.json({});
+    return res.json({});
   }
 
   const db = new Database();
@@ -205,7 +205,7 @@ receiver.app.post('/jira-post', async (req: Request, res: Response) => {
   });
 
   res.statusCode = 200;
-  return await res.json({result: 'success'});
+  return res.json({result: 'success'});
 });
 
 
