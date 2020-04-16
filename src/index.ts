@@ -57,7 +57,7 @@ app.command('/jira-comment-dm', async ({ command, ack, context }) => {
       case 'add':
         const jiraUserId = args.join(' ');
         if (jiraUserId) {
-          const id = await db.insertJiraUser(command.user_id, jiraUserId);
+          const id = await db.insertJiraUser(jiraUserId, command.user_id);
           console.log(`insert id: ${id} to ${command.user_id}/${command.user_name}`);
           await postEphemeral(`JIRAのユーザーを設定しました。: ${jiraUserId}`);
         }
@@ -196,6 +196,10 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
   const token = process.env.SLACK_BOT_TOKEN;
   userList.map(async (user) => {
     const slackUserId = await db.getSlackUserId(user);
+    if (!slackUserId) {
+      res.statusCode = 404;
+      return res.json({});
+    }
     console.log(`slackUserId: ${slackUserId}`);
     const payload: ChatPostMessageArguments = {
       token,
