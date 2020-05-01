@@ -296,6 +296,7 @@ app.event<"channel_created">(
       token,
       channel: "#z-feed-new-channel",
       text: message,
+      link_names: true,
     };
     await app.client.chat.postMessage(params);
     next();
