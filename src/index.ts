@@ -274,6 +274,31 @@ app.event<'emoji_changed'>(
       attachments,
     };
     await app.client.chat.postMessage(params);
+    next();
+  }
+);
+
+app.event<"channel_created">(
+  "channel_created",
+  async ({ next, context, payload }) => {
+    if (payload.type !== "channel_created") {
+      next();
+      return;
+    }
+
+    const channel = payload.channel;
+
+    const message = `新しいchannelが作成されました！\n#${channel.name}`;
+
+    const token = process.env.SLACK_BOT_TOKEN;
+
+    const params: ChatPostMessageArguments = {
+      token,
+      channel: "#z-feed-new-channel",
+      text: message,
+    };
+    await app.client.chat.postMessage(params);
+    next();
   }
 );
 
