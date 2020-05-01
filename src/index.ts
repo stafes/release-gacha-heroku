@@ -255,11 +255,14 @@ app.event<'emoji_changed'>(
 
     const token = process.env.SLACK_BOT_TOKEN;
 
+    const imageUrl = payload.value;
+
     let attachments: Array<MessageAttachment> = [];
-    if (payload.value) {
+    if (imageUrl !== '') {
       const attachment: MessageAttachment = {
-        image_url: payload.value,
-      }
+        fallback: payload.name,
+        image_url: imageUrl,
+      };
       attachments = [attachment];
     }
 
