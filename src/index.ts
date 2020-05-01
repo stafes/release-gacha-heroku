@@ -6,6 +6,7 @@ import express, {
 import {
   ChatPostMessageArguments,
   ChatPostEphemeralArguments,
+  MessageAttachment,
 } from "@slack/web-api";
 import { Database } from './database';
 
@@ -240,6 +241,38 @@ receiver.app.post('/jira-post', (req: Request, res: Response) => {
   res.statusCode = 200;
   return res.json({result: 'success'});
 });
+
+app.event<'emoji_changed'>(
+  'emoji_changed',
+  async ({ next, context, payload }) => {
+    if (payload.subtype !== 'add'
+      || !payload.name) {
+      next();
+      return;
+    }
+
+    const message = `新しいemojiが追加されました: \`:${payload.name}:\``;
+
+    const token = process.env.SLACK_BOT_TOKEN;
+
+    let attachments: Array<MessageAttachment> = [];
+    if (payload.value) {
+      const attachment: MessageAttachment = {
+        image_url: payload.value,
+      }
+      attachments = [attachment];
+    }
+
+    const params: ChatPostMessageArguments = {
+      token,
+      channel: '#z-feed-new-emoji',
+      text: message,
+      icon_emoji: `:${payload.name}:`,
+      attachments,
+    };
+    await app.client.chat.postMessage(params);
+  }
+);
 
 
 (async () => {
