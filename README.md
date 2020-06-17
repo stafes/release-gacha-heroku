@@ -1,8 +1,6 @@
 # 社内向けbolt application
 
-あまり公開向けに書いていないので雑。
-
-## Slash commands
+## Slash commands (src/commands)
 
 - /jira-comment-dm
 
@@ -12,7 +10,7 @@ jiraコメント通知へユーザー追加用のコマンド
 
 リリース当番ガチャ
 
-## other endpoints
+## other endpoints (src/api)
 
 - /jira-post
 
@@ -21,6 +19,12 @@ jiraからのwebhooks送信先
 - /keep-alive
 
 herokuのkeep alive用
+
+## events (src/events)
+
+- new emoji notifier
+
+- new channel notifier
 
 ## 環境変数
 
