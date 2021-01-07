@@ -25,6 +25,21 @@ export const registerChannelCreated = (app: App) => {
         link_names: true,
       };
       await app.client.chat.postMessage(params);
+
+      const channelNameRule = new RegExp(`^(${process.env.SLACK_CHANNEL_RULES})-`);
+      if (!channelNameRule.test(channel.name)) {
+        const alertParams: ChatPostMessageArguments = {
+          token,
+          channel: `#${channel.name}`,
+          text: `:female-police-officer:新しく作成された channel #${channel.name}はガイドライン外のchannel名です。
+ガイドラインに適した名前に変更をお願いします:relaxed:
+STAFES Slack Guideline: ${process.env.SLACK_GUIDELINE_URL}`,
+          link_names: true,
+          unfurl_links: true,
+        };
+        await app.client.chat.postMessage(alertParams);
+      }
+
       next();
     }
   );
