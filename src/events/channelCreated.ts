@@ -31,9 +31,9 @@ export const registerChannelCreated = (app: App) => {
         const alertParams: ChatPostMessageArguments = {
           token,
           channel: `#${channel.name}`,
-          text: `:female-police-officer:新しく作成された channel #${channel.name}はガイドライン外のchannel名です。
+          text: `:female-police-officer:新しく作成された channel #${channel.name} はガイドライン外のchannel名です。
 ガイドラインに適した名前に変更をお願いします:relaxed:
-STAFES Slack Guideline: ${process.env.SLACK_GUIDELINE_URL}`,
+<${process.env.SLACK_GUIDELINE_URL}|STAFES Slack Guideline>`,
           link_names: true,
           unfurl_links: true,
         };
