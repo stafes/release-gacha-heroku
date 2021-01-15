@@ -15,12 +15,6 @@ export const app  = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   receiver,
 });
-if (process.env.DEBUG) {
-  app.use((args: any) => {
-    console.log(JSON.stringify(args));
-    args.next();
-  });
-}
 
 receiver.app.use(express.urlencoded({ extended: true }));
 receiver.app.use(express.json());
@@ -31,7 +25,7 @@ registerEventHandlers(app);
 
 (async () => {
   // Start your app
-  await app.start(process.env.PORT || 3000);
+  await app.start(Number(process.env.PORT) || 3000);
   console.log("⚡️ Bolt app is running!");
 })();
 
