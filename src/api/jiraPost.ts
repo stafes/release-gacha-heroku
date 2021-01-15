@@ -54,12 +54,12 @@ export const registerJiraPost = (app: App, receiver: ExpressReceiver) => {
       };
 
       try {
-        await app.client.im.open({
+        await app.client.conversations.open({
           token,
-          user: slackUserId,
+          users: slackUserId,
         });
       } catch (e) {
-        console.error('im.open error');
+        console.error('conversations.open error');
         console.error(e);
         return;
       }
