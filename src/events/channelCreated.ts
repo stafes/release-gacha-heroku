@@ -25,10 +25,26 @@ export const registerChannelCreated = (app: App) => {
 
     const channelNameRule = new RegExp(`^(${process.env.SLACK_CHANNEL_RULES})-`);
     if (!channelNameRule.test(channel.name)) {
+      let username = '';
+      try {
+        const userResult = await app.client.users.info({
+          token,
+          user: event.channel.creator,
+        });
+        if (userResult.ok) {
+          const user = userResult.user as {
+            name: string;
+          };
+          username = `@${user.name}}`;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
       const alertParams: ChatPostMessageArguments = {
         token,
         channel: `#${channel.name}`,
-        text: `:female-police-officer:新しく作成された channel #${channel.name} はガイドライン外のchannel名です。
+        text: `${username} :female-police-officer:新しく作成された channel #${channel.name} はガイドライン外のchannel名です。
 ガイドラインに適した名前に変更をお願いします:relaxed:
 <${process.env.SLACK_GUIDELINE_URL}|STAFES Slack Guideline>`,
         link_names: true,
