@@ -35,7 +35,7 @@ export const registerChannelCreated = (app: App) => {
           const user = userResult.user as {
             name: string;
           };
-          username = `@${user.name}}`;
+          username = `@${user.name}`;
         }
       } catch (e) {
         console.error(e);
